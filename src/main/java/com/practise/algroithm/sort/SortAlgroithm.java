@@ -66,6 +66,7 @@ public class SortAlgroithm {
 
 
     @Test
+    @Ignore
     public void 直接选择排序StraightSelectSort() {
         Integer[] a = roundIntArr();
         System.out.println("——直接选择排序———");
@@ -157,6 +158,81 @@ public class SortAlgroithm {
     }
 
 
+    @Test
+    public void 冒泡排序BubbleSort() {
+        Integer[] a = roundIntArr();
+        System.out.println("——冒泡排序BubbleSort———");
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length - 1; j++) {
+                if (a[j] > a[j + 1]) {
+                    int temp = a[j];
+                    a[j] = a[j + 1];
+                    a[j + 1] = temp;
+                }
+            }
+        }
+        printResult(a);
+    }
+
+
+    @Test
+    public void 快速排序QuickSort() {
+        Integer[] a = roundIntArr();
+        System.out.println("——快速排序QuickSort———");
+        sort(a, 0, a.length - 1);
+        System.out.println("——结果———");
+        printResult(a);
+    }
+
+    /**
+     * 快排核心算法，递归实现
+     *
+     * @param array
+     * @param left
+     * @param right
+     */
+    public  void sort(Integer[] array, int left, int right) {
+        if (left > right) {
+            return;
+        }
+        // base中存放基准数
+        int base = array[left];
+        int i = left, j = right;
+        while (i != j) {
+            // 顺序很重要，先从右边开始往左找，直到找到比base值小的数
+            while (array[j] >= base && i < j) {
+                j--;
+            }
+
+            // 再从左往右边找，直到找到比base值大的数
+            while (array[i] <= base && i < j) {
+                i++;
+            }
+
+            // 上面的循环结束表示找到了位置或者(i>=j)了，交换两个数在数组中的位置
+            if (i < j) {
+                int tmp = array[i];
+                array[i] = array[j];
+                array[j] = tmp;
+            }
+        }
+
+        // 将基准数放到中间的位置（基准数归位）
+        array[left] = array[i];
+        array[i] = base;
+
+        // 递归，继续向基准的左右两边执行和上面同样的操作
+        // i的索引处为上面已确定好的基准值的位置，无需再处理
+        sort(array, left, i - 1);
+        System.out.println("——左过程———");
+        printResult(array);
+        sort(array, i + 1, right);
+        System.out.println("——右过程———");
+        printResult(array);
+
+    }
+
+
     private void printResult(Integer[] a) {
         for (int i = 0; i < a.length; i++) {
             System.out.print(a[i] + ",");
@@ -173,7 +249,7 @@ public class SortAlgroithm {
         }
         Integer[] a = new Integer[temp.size()];
         a = temp.toArray(a);
-        a = new Integer[]{56,11,19,83,60,77,22,11,90,63};
+        a = new Integer[]{56, 11, 19, 83, 60, 77, 22, 11, 90, 63};
         for (int i = 0; i < a.length; i++) {
             System.out.print(a[i] + ",");
         }
