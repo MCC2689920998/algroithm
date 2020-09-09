@@ -13,24 +13,33 @@ import java.util.List;
  * @Date 2020/5/9 9:48
  * @Version 1.0
  **/
-public class SortAlgroithm {
+public class SortAlgorithmTest {
 
+    private static int ARR_LENGTH = 10;
+    private static Integer [] arr = new Integer[]{15,27,46,40,64,85};
+//    private static Integer[] arr = new Integer[]{90, 80, 45, 38, 30, 25};
 
     @Test
     @Ignore
     public void 直接插入排序InsertSort() {
         Integer[] a = roundIntArr();
+        int count = 0;
         System.out.println("——直接插入排序算法———");
         int i, j;
         for (i = 1; i < a.length; i++) {
             int temp = a[i];
             for (j = i - 1; j >= 0 && a[j] > temp; j--) {
+                count++;
                 a[j + 1] = a[j];
             }
             a[j + 1] = temp;
+            System.out.print("第" + i + "次:");
             printResult(a);
         }
+        System.out.print("结果：");
         printResult(a);
+        System.out.println("count：" + count);
+
     }
 
 
@@ -79,8 +88,10 @@ public class SortAlgroithm {
                     temp = a[i - 1];
                 }
             }
+            System.out.print("第" + i + "次:");
             printResult(a);
         }
+        System.out.print("结果：");
         printResult(a);
     }
 
@@ -191,7 +202,7 @@ public class SortAlgroithm {
      * @param left
      * @param right
      */
-    public  void sort(Integer[] array, int left, int right) {
+    public void sort(Integer[] array, int left, int right) {
         if (left > right) {
             return;
         }
@@ -229,7 +240,137 @@ public class SortAlgroithm {
         sort(array, i + 1, right);
         System.out.println("——右过程———");
         printResult(array);
+    }
 
+    @Test
+    public void 归并排序MergeSort() {
+        Integer[] a = roundIntArr();
+        System.out.println("——归并排序MergeSort———");
+        MergeSort1(a, 0, a.length - 1);
+        System.out.println("——结果———");
+        printResult(a);
+    }
+
+    private void MergeSort1(Integer[] a, int left, int right) {
+        int mid = (left + right) / 2;
+        if (left < right) {
+            MergeSort1(a, left, mid);
+            System.out.println("——左过程———");
+            printResult(a);
+
+            MergeSort1(a, mid + 1, right);
+            System.out.println("——右过程———");
+            printResult(a);
+
+            //左右归并
+            MergeSort(a, left, mid, right);
+            System.out.println("——左右归并———");
+            printResult(a);
+        }
+    }
+
+
+    public void MergeSort(Integer[] a, int left, int mid, int right) {
+        int[] temp = new int[right - left + 1];
+        int i = left;
+        int j = mid + 1;
+        int k = 0;
+        // 把较小的数先移到新数组中
+        while (i <= mid && j <= right) {
+            if (a[i] < a[j]) {
+                temp[k++] = a[i++];
+            } else {
+                temp[k++] = a[j++];
+            }
+        }
+        // 把左边剩余的数移入数组
+        while (i <= mid) {
+            temp[k++] = a[i++];
+        }
+        // 把右边边剩余的数移入数组
+        while (j <= right) {
+            temp[k++] = a[j++];
+        }
+        // 把新数组中的数覆盖nums数组
+        for (int x = 0; x < temp.length; x++) {
+            a[x + left] = temp[x];
+        }
+    }
+
+
+    @Test
+    public void 基数排序RadixSort() {
+        Integer[] a = roundIntArr();
+        System.out.println("——基数排序RadixSort———");
+        radixSort(a);
+        System.out.println("——结果———");
+        printResult(a);
+
+    }
+
+    /*
+     * 基数排序
+     *
+     * 参数说明：
+     *     a -- 数组
+     */
+    public static void radixSort(Integer[] a) {
+        int exp;    // 指数。当对数组按各位进行排序时，exp=1；按十位进行排序时，exp=10；...
+        int max = getMax(a);    // 数组a中的最大值
+        // 从个位开始，对数组a按"指数"进行排序
+        for (exp = 1; max / exp > 0; exp *= 10) {
+            countSort(a, exp);
+        }
+    }
+
+    private static int getMax(Integer[] a) {
+        int max;
+        max = a[0];
+        for (int i = 1; i < a.length; i++) {
+            if (a[i] > max) {
+                max = a[i];
+            }
+        }
+        return max;
+    }
+
+    /*
+     * 对数组按照"某个位数"进行排序(桶排序)
+     *
+     * 参数说明：
+     *     a -- 数组
+     *     exp -- 指数。对数组a按照该指数进行排序。
+     *
+     * 例如，对于数组a={50, 3, 542, 745, 2014, 154, 63, 616}；
+     *    (01) 当exp=1表示按照"个位"对数组a进行排序
+     *    (02) 当exp=10表示按照"十位"对数组a进行排序
+     *    (03) 当exp=100表示按照"百位"对数组a进行排序
+     *    ...
+     */
+    private static void countSort(Integer[] a, int exp) {
+        //int output[a.length];    // 存储"被排序数据"的临时数组
+        int[] output = new int[a.length];    // 存储"被排序数据"的临时数组
+        int[] buckets = new int[10];
+        // 将数据出现的次数存储在buckets[]中
+        for (int i = 0; i < a.length; i++) {
+            buckets[(a[i] / exp) % 10]++;
+        }
+        // 更改buckets[i]。目的是让更改后的buckets[i]的值，是该数据在output[]中的位置。
+        for (int i = 1; i < 10; i++) {
+            buckets[i] += buckets[i - 1];
+        }
+
+        // 将数据存储到临时数组output[]中
+        for (int i = a.length - 1; i >= 0; i--) {
+            output[buckets[(a[i] / exp) % 10] - 1] = a[i];
+            buckets[(a[i] / exp) % 10]--;
+        }
+        // 将排序好的数据赋值给a[]
+        for (int i = 0; i < a.length; i++) {
+            a[i] = output[i];
+        }
+        output = null;
+        buckets = null;
     }
 
 
@@ -241,23 +382,6 @@ public class SortAlgroithm {
     }
 
 
-    public static Integer[] roundIntArr() {
-        List<Integer> temp = Lists.newArrayList();
-        for (int i = 0; i < 10; i++) {
-            int a = (int) (Math.random() * 100);
-            temp.add(a);
-        }
-        Integer[] a = new Integer[temp.size()];
-        a = temp.toArray(a);
-        a = new Integer[]{56, 11, 19, 83, 60, 77, 22, 11, 90, 63};
-        for (int i = 0; i < a.length; i++) {
-            System.out.print(a[i] + ",");
-        }
-        System.out.println();
-        return a;
-    }
-
-
     @Test
     public void 位移操作() {
         System.out.println(2 << 1);
@@ -266,6 +390,25 @@ public class SortAlgroithm {
         System.out.println(8 << 2);
 
 
+    }
+
+    public static Integer[] roundIntArr() {
+        List<Integer> temp = Lists.newArrayList();
+
+        if (arr.length > 0) {
+            return arr;
+        }
+        for (int i = 0; i < ARR_LENGTH; i++) {
+            int a = (int) (Math.random() * 100);
+            temp.add(a);
+        }
+        Integer[] a = new Integer[temp.size()];
+        a = temp.toArray(a);
+        for (int i = 0; i < a.length; i++) {
+            System.out.print(a[i] + ",");
+        }
+        System.out.println();
+        return a;
     }
 
 
